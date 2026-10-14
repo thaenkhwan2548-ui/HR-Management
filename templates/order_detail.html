@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <a href="{% url 'order_list' %}" class="btn btn-secondary mb-3">← กลับไปหน้ารายการสั่งซื้อ</a>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">รายละเอียดคำสั่งซื้อ: {{ order.order_id }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>รหัส/ชื่อลูกค้า:</strong> {{ order.customer_id }}</p>
+                    <p><strong>วันที่สั่งซื้อ:</strong> {{ order.created_at|date:"d/m/Y H:i:s" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>ยอดรวมทั้งหมด:</strong> <span class="fs-4 text-primary">{{ order.total_amount|floatformat:2 }} บาท</span></p>
+                    <p><strong>สถานะคำสั่งซื้อ:</strong> 
+                        {% if order.order_status == 'Paid' %}
+                            <span class="badge bg-success fs-6">ชำระเงินแล้ว</span>
+                        {% elif order.order_status == 'Pending' %}
+                            <span class="badge bg-warning text-dark fs-6">รอชำระเงิน</span>
+                        {% else %}
+                            <span class="badge bg-danger fs-6">ยกเลิก</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ประวัติการชำระเงิน -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">💳 ประวัติการชำระเงิน (Payments)</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>ช่องทางชำระเงิน</th>
+                        <th>จำนวนเงิน (บาท)</th>
+                        <th>สถานะการชำระ</th>
+                        <th>รหัสอ้างอิง/สลิป</th>
+                        <th>เวลาชำระเงิน</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pay in order.payments.all %}
+                    <tr>
+                        <td>{{ pay.get_payment_method_display }}</td>
+                        <td>{{ pay.amount|floatformat:2 }}</td>
+                        <td>
+                            {% if pay.payment_status == 'Success' %}
+                                <span class="badge bg-success">สำเร็จ</span>
+                            {% elif pay.payment_status == 'Pending' %}
+                                <span class="badge bg-warning text-dark">รอตรวจสอบ</span>
+                            {% else %}
+                                <span class="badge bg-danger">ล้มเหลว</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ pay.transaction_ref|default:"-" }}</td>
+                        <td>{{ pay.paid_at|date:"d/m/Y H:i:s" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-3 text-muted">ยังไม่มีประวัติการชำระเงินสำหรับคำสั่งซื้อนี้</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

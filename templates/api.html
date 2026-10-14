@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS - Data Management & Calculation</title>
+    <!-- Bootstrap 5 & Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --primary: #0d6efd;
+            --border-color: #e2e8f0;
+        }
+        body {
+            background-color: var(--bg-main);
+            font-family: 'Prompt', sans-serif;
+            color: #334155;
+        }
+        .navbar-custom {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+        }
+        .card-custom {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .card-header-custom {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 20px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .table-custom th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 12px 16px;
+        }
+        .table-custom td {
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            color: #1e293b;
+        }
+        .nav-pills .nav-link {
+            color: #475569;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 10px 24px;
+            margin-right: 10px;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            padding: 0.55rem 0.75rem;
+            font-size: 0.9rem;
+        }
+        /* Google Maps Container */
+        #google-map {
+            height: 250px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-custom d-flex justify-content-between align-items-center mb-4">
+        <div class="fw-bold fs-5 text-dark">
+            <i class="fa-solid fa-building-columns me-2 text-primary"></i> ระบบจัดการพนักงานและคำนวณค่าเดินทาง
+        </div>
+        <div>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-sm fw-medium px-3 me-2">
+                <i class="fa-solid fa-chart-pie me-1"></i> แดชบอร์ดภาพรวม
+            </a>
+            <a href="{% url 'index' %}" class="btn btn-outline-secondary btn-sm fw-medium px-3">
+                <i class="fa-solid fa-arrow-left me-1"></i> กลับหน้าระบบหลัก
+            </a>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4" style="max-width: 1400px;">
+        
+        <!-- Tab Navigation -->
+        <div class="nav nav-pills mb-4 d-flex justify-content-center" role="tablist">
+            <button class="nav-link active shadow-sm" onclick="switchTab(event, 'employees')">
+                <i class="fa-solid fa-users me-2"></i> ข้อมูลพนักงานทั้งหมด
+            </button>
+            <button class="nav-link shadow-sm" onclick="switchTab(event, 'allowance')">
+                <i class="fa-solid fa-car-side me-2"></i> ระบบคำนวณเบี้ยเลี้ยง / ค่าเดินทาง
+            </button>
+        </div>
+
+        <!-- TAB 1: EMPLOYEES MANAGEMENT -->
+        <div id="tab-employees" class="tab-section">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="card-custom h-100">
+                        <div class="card-header-custom text-primary">
+                            <span><i class="fa-solid fa-user-plus me-2"></i> เพิ่มข้อมูลพนักงานใหม่</span>
+                        </div>
+                        <div class="p-4">
+                            <form id="add-employee-form">
+                                <div class="mb-3">
+                                    <label class="form-label">ชื่อจริง</label>
+                                    <input type="text" id="first_name" class="form-control" placeholder="ระบุชื่อจริง" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">นามสกุล</label>
+                                    <input type="text" id="last_name" class="form-control" placeholder="ระบุนามสกุล">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="position" class="form-label">ตำแหน่ง</label>
+                                    <select class="form-select" id="position" name="position" required>
+                                        <option value="" selected disabled>-- ระบุตำแหน่งงาน --</option>
+                                        <option value="โปรแกรมเมอร์">โปรแกรมเมอร์ (Software Engineer)</option>
+                                        <option value="เจ้าหน้าที่บุคคล">เจ้าหน้าที่บุคคล (HR Officer)</option>
+                                        <option value="นักบัญชี">นักบัญชี (Accountant)</option>
+                                        <option value="เจ้าหน้าที่การตลาด">เจ้าหน้าที่การตลาด (Marketing Specialist)</option>
+                                        <option value="เจ้าหน้าที่ฝ่ายขาย">เจ้าหน้าที่ฝ่ายขาย (Sales Executive)</option>
+                                        <option value="ผู้จัดการโครงการ">ผู้จัดการโครงการ (Project Manager)</option>
+                                        <option value="เจ้าหน้าที่ธุรการ">เจ้าหน้าที่ธุรการ (Admin Officer)</option>
+                                        <option value="พนักงานทั่วไป">พนักงานทั่วไป</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">แผนก</label>
+                                    <select id="department" class="form-select">
+                                        <option value="IT">IT (ไอที)</option>
+                                        <option value="HR">HR (บุคคล)</option>
+                                        <option value="ACC">ACC (บัญชี)</option>
+                                        <option value="MKT">MKT (การตลาด)</option>
+                                        <option value="SALES">SALES (ฝ่ายขาย)</option>
+                                        <option value="MGMT">MGMT (บริหาร)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">เงินเดือน (บาท)</label>
+                                    <input type="number" id="salary" class="form-control" placeholder="0.00" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 fw-medium py-2">
+                                    <i class="fa-solid fa-save me-1"></i> บันทึกข้อมูลพนักงาน
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="card-custom">
+                        <div class="card-header-custom">
+                            <span class="fw-bold text-dark"><i class="fa-solid fa-table-list me-2"></i> รายชื่อพนักงานในระบบ</span>
+                            <button class="btn btn-sm btn-outline-primary fw-medium" onclick="loadEmployeesTable()">
+                                <i class="fa-solid fa-rotate me-1"></i> โหลดข้อมูลใหม่
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-custom table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>ชื่อ - สกุล</th>
+                                        <th>ตำแหน่ง</th>
+                                        <th>แผนก</th>
+                                        <th class="text-end">เงินเดือน</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employee-table-body">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">กำลังโหลดข้อมูล...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: TRAVEL ALLOWANCE CALCULATION -->
+        <div id="tab-allowance" class="tab-section d-none">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card-custom h-100">
+                        <div class="card-header-custom text-warning" style="color: #d97706 !important;">
+                            <span><i class="fa-solid fa-location-dot me-2"></i> คำนวณค่าเดินทาง</span>
+                        </div>
+                        <div class="p-4">
+                            <form id="calc-allowance-form">
+                                <div class="mb-3">
+                                    <label class="form-label">เลือกพนักงานที่เดินทาง</label>
+                                    <select id="employee_select" class="form-select" required>
+                                        <option value="">-- เลือกพนักงาน --</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">ที่อยู่ปัจจุบัน (Current Address)</label>
+                                    <input type="text" id="address_input" class="form-control" placeholder="เช่น บ้านเลขที่, ซอย, ถนน" required>
+                                </div>
+
+                                <!-- Google Maps Interactive Element -->
+                                <div class="mb-2">
+                                    <label class="form-label mb-1 text-primary"><i class="fa-solid fa-hand-pointer me-1"></i> คลิกเลือกตำแหน่งบน Google Maps</label>
+                                    <div id="google-map"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">พิกัด GPS (Latitude, Longitude)</label>
+                                    <input type="text" id="location_input" class="form-control bg-light" placeholder="คลิกบนแผนที่เพื่อดึงพิกัดอัตโนมัติ" readonly required>
+                                </div>
+                                <button type="submit" class="btn btn-warning w-100 fw-bold text-dark shadow-sm py-2">
+                                    <i class="fa-solid fa-calculator me-1"></i> คำนวณระยะทาง
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="card-custom">
+                        <div class="card-header-custom d-flex justify-content-between">
+                            <span class="fw-bold text-dark"><i class="fa-solid fa-receipt me-2"></i> ผลลัพธ์การคำนวณเบี้ยเลี้ยงประจำตัว</span>
+                            <button class="btn btn-sm btn-outline-danger fw-medium" onclick="clearAllowanceTable()">
+                                <i class="fa-solid fa-trash me-1"></i> ล้างตาราง
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>ชื่อพนักงาน</th>
+                                        <th class="text-center">ระยะทางจากบ้านมาบริษัท</th>
+                                        <th class="text-end">เงินอุดหนุนค่าเดินทาง</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allowance-table-body">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">เลือกพนักงานและคลิกแผนที่ Google Maps แล้วกด "คำนวณระยะทาง"</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Google Maps JS API (ใส่ key ของแกตรง YOUR_API_KEY หรือปล่อยไว้ทดสอบหน้าตาได้) -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"></script>
+
+    <!-- JavaScript -->
+    <script>
+        let isAllowanceTableEmpty = true;
+        let map = null;
+        let marker = null;
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function switchTab(evt, tabName) {
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.add('d-none'));
+            document.getElementById(`tab-${tabName}`).classList.remove('d-none');
+            
+            document.querySelectorAll('.nav-pills .nav-link').forEach(btn => btn.classList.remove('active'));
+            evt.currentTarget.classList.add('active');
+
+            if (tabName === 'employees') {
+                loadEmployeesTable();
+            } else if (tabName === 'allowance') {
+                loadEmployeesDropdown();
+                setTimeout(() => {
+                    if (map) {
+                        google.maps.event.trigger(map, "resize");
+                    }
+                }, 200);
+            }
+        }
+
+        function initMap() {
+            const defaultLocation = { lat: 13.7563, lng: 100.5018 }; // พิกัดเริ่มต้น กรุงเทพฯ
+
+            map = new google.maps.Map(document.getElementById("google-map"), {
+                zoom: 13,
+                center: defaultLocation,
+            });
+
+            map.addListener("click", (mapsMouseEvent) => {
+                const clickedPos = mapsMouseEvent.latLng;
+                const lat = clickedPos.lat().toFixed(6);
+                const lng = clickedPos.lng().toFixed(6);
+
+                if (marker) {
+                    marker.setPosition(clickedPos);
+                } else {
+                    marker = new google.maps.Marker({
+                        position: clickedPos,
+                        map: map,
+                    });
+                }
+
+                document.getElementById('location_input').value = `${lat}, ${lng}`;
+            });
+        }
+
+        function loadEmployeesDropdown() {
+            const select = document.getElementById('employee_select');
+            fetch('/api/employees/', { headers: { 'Accept': 'application/json' } })
+            .then(res => res.json())
+            .then(data => {
+                let options = '<option value="">-- เลือกพนักงาน --</option>';
+                data.forEach(emp => {
+                    let fullName = `${emp.first_name || ''} ${emp.last_name || ''}`.trim();
+                    options += `<option value="${fullName}">${fullName} (${emp.position || 'พนักงาน'})</option>`;
+                });
+                select.innerHTML = options;
+            });
+        }
+
+        function loadEmployeesTable() {
+            const tbody = document.getElementById('employee-table-body');
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">กำลังโหลดข้อมูลพนักงาน...</td></tr>`;
+            
+            fetch('/api/employees/', { headers: { 'Accept': 'application/json' } })
+            .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">ยังไม่มีข้อมูลพนักงานในระบบ</td></tr>`;
+                    return;
+                }
+                
+                let html = '';
+                data.forEach(emp => {
+                    let salaryFormatted = Number(emp.salary).toLocaleString('th-TH', { minimumFractionDigits: 2 });
+                    let fullName = `${emp.first_name || ''} ${emp.last_name || ''}`.trim();
+                    html += `
+                        <tr>
+                            <td>#${emp.id}</td>
+                            <td class="fw-semibold">${fullName}</td>
+                            <td>${emp.position || '-'}</td>
+                            <td><span class="badge bg-light text-dark border">${emp.department || '-'}</span></td>
+                            <td class="text-end fw-bold text-success">฿${salaryFormatted}</td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            })
+            .catch(err => {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>`;
+            });
+        }
+
+        function clearAllowanceTable() {
+            const tbody = document.getElementById('allowance-table-body');
+            tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">เลือกพนักงานและคลิกแผนที่ Google Maps แล้วกด "คำนวณระยะทาง"</td></tr>`;
+            isAllowanceTableEmpty = true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEmployeesTable();
+        });
+
+        document.getElementById('add-employee-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = e.submitter;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+            
+            const payload = {
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
+                position: document.getElementById('position').value,
+                department: document.getElementById('department').value,
+                salary: parseFloat(document.getElementById('salary').value)
+            };
+
+            fetch('/api/employees/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => {
+                if(res.ok || res.status === 201) return res.json();
+                throw new Error("ไม่สามารถบันทึกข้อมูลได้");
+            })
+            .then(data => {
+                alert('เพิ่มข้อมูลพนักงานสำเร็จ!');
+                document.getElementById('add-employee-form').reset();
+                loadEmployeesTable();
+                loadEmployeesDropdown();
+            })
+            .catch(err => alert(err.message))
+            .finally(() => btn.innerHTML = originalText);
+        });
+
+        document.getElementById('calc-allowance-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const selectedEmployee = document.getElementById('employee_select').value;
+            if (!selectedEmployee) {
+                alert('กรุณาเลือกพนักงานก่อนคำนวณ');
+                return;
+            }
+
+            let inputVal = document.getElementById('location_input').value.trim();
+            if (!inputVal) {
+                alert('กรุณาคลิกเลือกตำแหน่งบนแผนที่ Google Maps ก่อนครับ');
+                return;
+            }
+
+            const tbody = document.getElementById('allowance-table-body');
+            if (isAllowanceTableEmpty) {
+                tbody.innerHTML = ''; 
+                isAllowanceTableEmpty = false;
+            }
+
+            let lat = 13.7563;
+            let lon = 100.5018;
+            
+            if (inputVal.includes(',')) {
+                let parts = inputVal.split(',');
+                if(parts.length === 2) {
+                    lat = parseFloat(parts[0]);
+                    lon = parseFloat(parts[1]);
+                }
+            }
+
+            const payload = {
+                latitude: lat,
+                longitude: lon
+            };
+
+            fetch('/api/calculate-allowance/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                let allowanceFormatted = Number(data.allowance_baht).toLocaleString('th-TH', { minimumFractionDigits: 2 });
+                
+                let newRow = `
+                    <tr>
+                        <td>
+                            <div class="fw-bold text-dark">${selectedEmployee}</div>
+                            <span class="badge bg-success" style="font-size: 0.7rem;">คำนวณสำเร็จ</span>
+                        </td>
+                        <td class="text-center fw-bold">${data.distance_km} กิโลเมตร</td>
+                        <td class="text-end fw-bold text-primary fs-6">฿${allowanceFormatted}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += newRow;
+                
+                // รีเซ็ตฟอร์ม
+                document.getElementById('employee_select').value = '';
+                document.getElementById('address_input').value = '';
+                document.getElementById('location_input').value = '';
+                if (marker) {
+                    marker.setMap(null);
+                    marker = null;
+                }
+            })
+            .catch(err => {
+                alert('เกิดข้อผิดพลาดในการคำนวณ');
+            });
+        });
+    </script>
+</body>
+</html>

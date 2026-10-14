@@ -7,8 +7,8 @@ class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = '__all__'
+        # เอา exclude ออก เพื่อให้ฟิลด์ position แสดงผลในฟอร์มปกติ
         widgets = {
-            # เพิ่ม format='%Y-%m-%d' ตรงนี้
             'birth_date': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -17,19 +17,18 @@ class EmployeeForm(forms.ModelForm):
             'department': forms.Select(attrs={'class': 'form-select'}),
             'salary': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'photo': forms.FileInput(attrs={'class': 'form-control'}),
-            
-            'position': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'เช่น โปรแกรมเมอร์'}),
+            # กำหนดให้ฟิลด์ position แสดงเป็นช่องเลือก (Select Dropdown)
+            'position': forms.Select(attrs={'class': 'form-select'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'เช่น 01454789632'}),
             'bank_name': forms.Select(attrs={'class': 'form-select'}),
             'bank_account': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'เช่น 111-111-1111'}),
-            # เพิ่ม format='%Y-%m-%d' ตรงนี้ด้วย
             'hire_date': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),
         }
 
     def clean_salary(self):
         salary = self.cleaned_data.get('salary')
-        if salary < 0:
+        if salary is not None and salary < 0:
             raise forms.ValidationError("เงินเดือนต้องไม่ติดลบ")
         return salary
 

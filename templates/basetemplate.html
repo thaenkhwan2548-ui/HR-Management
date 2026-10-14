@@ -2,54 +2,286 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>Employee Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise HRMS Portal</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Font: Kanit -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome สำหรับไอคอนสากล -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --sidebar-width: 290px;
+            --topbar-height: 60px;
+            --primary-color: #1e293b;
+            --accent-blue: #0284c7;
+            --text-main: #334155;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Kanit', sans-serif;
+            margin: 0;
+            padding-top: var(--topbar-height);
+        }
+
+        /* Topbar สไตล์ Enterprise Header */
+        .top-navbar {
+            height: var(--topbar-height);
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .brand-logo {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-box-portal {
+            background-color: #f1f5f9;
+            border-radius: 6px;
+            padding: 6px 14px;
+            border: 1px solid #e2e8f0;
+            width: 260px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .search-box-portal:focus {
+            background-color: #ffffff;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+        }
+
+        /* Sidebar สไตล์ Enterprise Navigation */
+        .fb-sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: var(--topbar-height);
+            bottom: 0;
+            left: 0;
+            background-color: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            padding: 16px 12px;
+            overflow-y: auto;
+            z-index: 1020;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: #475569;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f1f5f9;
+            color: var(--accent-blue);
+        }
+
+        .sidebar-item.active {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            font-weight: 600;
+        }
+
+        .sidebar-icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            background-color: #f8fafc;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .sidebar-item.active .sidebar-icon-box {
+            background-color: #ffffff;
+            color: #0284c7;
+            border-color: #bae6fd;
+        }
+
+        .sidebar-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-divider {
+            border-top: 1px solid #e2e8f0;
+            margin: 12px 8px;
+        }
+
+        .sidebar-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #94a3b8;
+            padding: 6px 12px 4px 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* พื้นที่แสดงเนื้อหาหลักฝั่งขวา */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            padding: 28px;
+            min-height: calc(100vh - var(--topbar-height));
+        }
+
+        @media (max-width: 991.98px) {
+            .fb-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.25s ease;
+            }
+            .fb-sidebar.show {
+                transform: translateX(0);
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'dashboard' %}">ระบบจัดการพนักงาน</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <!-- เมนูสำหรับพนักงาน -->
-                    <li class="nav-item">
-                        <a class="nav-link fw-bold text-info" href="{% url 'ess_dashboard' %}">📱 ระบบพนักงาน (ESS)</a>
-                    </li>
-                    
-                    <!-- เช็คสิทธิ์: ถ้าเป็น Admin (is_staff) ถึงจะเห็นเมนูข้างล่างนี้ -->
-                    {% if user.is_staff %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">แดชบอร์ด</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">รายชื่อพนักงาน</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'attendance' %}">บันทึกเวลา</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'approval' %}">อนุมัติคำขอ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'payroll' %}">เงินเดือน</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'reports' %}">รายงาน</a></li>
-                    {% endif %}
-                </ul>
-                <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">สวัสดี, {{ user.username }}</a></li>
-                        <li class="nav-item">
-                            <form method="post" action="{% url 'logout' %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-link nav-link">ออกจากระบบ</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">เข้าสู่ระบบ</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">สมัครสมาชิก</a></li>
-                    {% endif %}
-                </ul>
+
+    <!-- 1. Top Navbar Header -->
+    <header class="top-navbar">
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-light d-lg-none border" type="button" onclick="document.querySelector('.fb-sidebar').classList.toggle('show')">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a class="brand-logo" href="{% url 'ess_dashboard' %}">
+                <i class="fa-solid fa-building-shield fs-4 text-primary"></i>
+                <span class="d-none d-sm-inline">ระบบบริหารทรัพยากรบุคคล (HRMS)</span>
+            </a>
+            <input type="text" class="search-box-portal ms-2 d-none d-md-block" placeholder="🔍 ค้นหาข้อมูลในระบบ...">
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            {% if user.is_authenticated %}
+                <div class="d-flex align-items-center gap-2 me-2">
+                    <div class="sidebar-avatar">{{ user.username|first|upper }}</div>
+                    <span class="fw-semibold small d-none d-sm-inline">{{ user.username }}</span>
+                </div>
+                <form method="post" action="{% url 'logout' %}" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger px-3 rounded-pill">ออกจากระบบ</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-sm btn-primary px-3 rounded-pill">เข้าสู่ระบบ</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- 2. Left Sidebar (Enterprise Style) -->
+    <aside class="fb-sidebar">
+        {% if user.is_authenticated %}
+        <div class="d-flex align-items-center gap-2 px-2 pb-3 mb-2 border-bottom">
+            <div class="sidebar-avatar">{{ user.username|first|upper }}</div>
+            <div class="overflow-hidden">
+                <div class="fw-semibold text-truncate small">{{ user.username }}</div>
+                <div class="text-muted" style="font-size: 0.75rem;">ผู้ใช้งานระบบ</div>
             </div>
         </div>
-    </nav>
-    <div class="container">
+        {% endif %}
+
+        <!-- เมนูหลัก -->
+        <a href="{% url 'ess_dashboard' %}" class="sidebar-item {% if request.resolver_match.url_name == 'ess_dashboard' %}active{% endif %}">
+            <div class="sidebar-icon-box"><i class="fa-solid fa-id-badge"></i></div>
+            <span>ระบบพนักงาน (ESS)</span>
+        </a>
+
+        {% if user.is_staff %}
+        <a href="{% url 'index' %}" class="sidebar-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+            <div class="sidebar-icon-box"><i class="fa-solid fa-users-gear"></i></div>
+            <span>ทำเนียบพนักงาน</span>
+        </a>
+
+        <a href="{% url 'attendance' %}" class="sidebar-item {% if request.resolver_match.url_name == 'attendance' %}active{% endif %}">
+            <div class="sidebar-icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
+            <span>ระบบบันทึกเวลา</span>
+        </a>
+
+        <a href="{% url 'payroll' %}" class="sidebar-item {% if request.resolver_match.url_name == 'payroll' %}active{% endif %}">
+            <div class="sidebar-icon-box"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+            <span>เงินเดือนและค่าตอบแทน</span>
+        </a>
+
+        <a href="{% url 'reports' %}" class="sidebar-item {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+            <div class="sidebar-icon-box"><i class="fa-solid fa-chart-line"></i></div>
+            <span>รายงานและสถิติ</span>
+        </a>
+        {% endif %}
+
+        <div class="sidebar-divider"></div>
+
+        <!-- หมวดหมู่ทางลัด -->
+        <div class="sidebar-section-title">เมนูด่วน (Quick Links)</div>
+
+        <a href="{% url 'ess_dashboard' %}" class="sidebar-item">
+            <div class="sidebar-icon-box"><i class="fa-solid fa-file-pen"></i></div>
+            <span>ยื่นคำขอลา / เบิกจ่าย</span>
+        </a>
+
+        <a href="{% url 'profile' %}" class="sidebar-item">
+            <div class="sidebar-icon-box"><i class="fa-solid fa-user-gear"></i></div>
+            <span>ตั้งค่าโปรไฟล์</span>
+        </a>
+        
+        <!-- เมนูเชื่อมโยงไปยัง API Console ที่เพิ่งสร้าง -->
+        <a href="{% url 'api_page' %}" class="sidebar-item">
+            <div class="sidebar-icon-box"><i class="fa-solid fa-network-wired"></i></div>
+            <span>API Management Console</span>
+        </a>
+    </aside>
+
+    <!-- 3. Main Content Area -->
+    <main class="main-wrapper">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                <div class="alert alert-{{ message.tags }} border-0 shadow-sm rounded-3 mb-4">{{ message }}</div>
             {% endfor %}
         {% endif %}
+
         {% block content %}{% endblock %}
-    </div>
+    </main>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

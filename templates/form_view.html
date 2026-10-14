@@ -1,10 +1,64 @@
 {% extends 'basetemplate.html' %}
 {% block content %}
-<h2>{{ title }}</h2>
-<form method="post" enctype="multipart/form-data" class="mt-4">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
-    <a href="{% url 'index' %}" class="btn btn-secondary">ยกเลิก</a>
-</form>
+<div class="container py-4" style="max-width: 700px;">
+    <div class="card shadow border-0" style="border-radius: 1rem;">
+        <div class="card-header bg-primary text-white text-center py-3" style="border-top-left-radius: 1rem; border-top-right-radius: 1rem;">
+            <h4 class="mb-0 fw-bold"><i class="fa-solid fa-user-pen me-2"></i>{{ title|default:"จัดการข้อมูลพนักงาน" }}</h4>
+        </div>
+        <div class="card-body p-4 p-md-5">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- วนลูปแสดงฟิลด์ทั้งหมด หรือเลือกแสดงทีละฟิลด์เพื่อให้ช่องตำแหน่งอยู่ตำแหน่งที่ต้องการ -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">คำนำหน้าชื่อ</label>
+                    {{ form.title }}
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">ชื่อจริง</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">นามสกุล</label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+
+                <!-- ช่องตำแหน่งที่ต้องการให้เห็นชัดเจน -->
+                <div class="mb-3 p-3 bg-light rounded border border-info">
+                    <label class="form-label fw-bold text-primary"><i class="fa-solid fa-briefcase me-1"></i> ตำแหน่งงาน (Position)</label>
+                    {{ form.position }}
+                    <small class="text-muted">เช่น โปรแกรมเมอร์, เจ้าหน้าที่ HR, พนักงานบัญชี</small>
+                </div>
+
+                <!-- แสดงฟิลด์ส่วนที่เหลืออัตโนมัติ -->
+                <div class="mb-3">
+                    {{ form.gender.as_hidden }} <!-- หรือปล่อยให้ฟอร์มเรนเดอร์ส่วนที่เหลือ -->
+                </div>
+
+                {% for field in form %}
+                    {% if field.name not in 'title,first_name,last_name,position' %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+
+                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <a href="{% url 'index' %}" class="btn btn-secondary px-4 py-2">
+                        <i class="fa-solid fa-arrow-left me-1"></i> ยกเลิก
+                    </a>
+                    <button type="submit" class="btn btn-success px-4 py-2 fw-semibold">
+                        <i class="fa-solid fa-save me-1"></i> บันทึกข้อมูล
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

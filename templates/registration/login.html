@@ -1,30 +1,94 @@
 {% extends 'basetemplate.html' %}
-{% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white text-center">
-                    <h4 class="mb-0">เข้าสู่ระบบ</h4>
-                </div>
-                <div class="card-body p-4">
-                    
-                    <form method="POST">
-                        {% csrf_token %}  <!-- 🌟 พระเอกของเราคือบรรทัดนี้ครับ -->
-                        
-                        {{ form.as_p }}
-                        
-                        <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary fw-bold">เข้าสู่ระบบ</button>
-                        </div>
-                    </form>
-                    
-                    <div class="text-center mt-3">
-                        <a href="{% url 'register' %}" class="text-decoration-none">ยังไม่มีบัญชี? สมัครสมาชิกที่นี่</a>
-                    </div>
 
+{% block content %}
+<style>
+    .login-card {
+        max-width: 420px;
+        margin: 2rem auto;
+        border: none;
+        border-radius: 1.25rem;
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+        background: #ffffff;
+        overflow: hidden;
+    }
+
+    .login-header {
+        background: linear-gradient(135deg, #dcfce7 0%, #ccfbf1 100%);
+        padding: 1.5rem;
+        text-align: center;
+        color: #065f46;
+        font-weight: 600;
+        font-size: 1.25rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .form-control {
+        border-radius: 0.75rem;
+        border: 1px solid #cbd5e1;
+        background-color: #f8fafc;
+        padding: 0.65rem 0.9rem;
+    }
+
+    .form-control:focus {
+        background-color: #ffffff;
+        border-color: #34d399;
+        box-shadow: 0 0 0 0.25rem rgba(52, 211, 153, 0.2);
+    }
+
+    .btn-pastel-submit {
+        background-color: #a7f3d0;
+        color: #065f46;
+        border: none;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        padding: 0.7rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-pastel-submit:hover {
+        background-color: #6ee7b7;
+        color: #022c22;
+    }
+
+    .link-pastel {
+        color: #059669;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .link-pastel:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="card login-card w-100">
+        <div class="login-header">
+            🔐 เข้าสู่ระบบ
+        </div>
+        <div class="card-body p-4">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_username" class="form-label small fw-bold text-secondary">ชื่อผู้ใช้</label>
+                    <input type="text" name="username" class="form-control" id="id_username" required placeholder="กรอกชื่อผู้ใช้">
                 </div>
-            </div>
+
+                <div class="mb-4">
+                    <label for="id_password" class="form-label small fw-bold text-secondary">รหัสผ่าน</label>
+                    <input type="password" name="password" class="form-control" id="id_password" required placeholder="กรอกรหัสผ่าน">
+                </div>
+
+                <button type="submit" class="btn btn-pastel-submit w-100 mb-3">
+                    เข้าสู่ระบบ
+                </button>
+
+                <div class="text-center pt-2 border-top">
+                    <span class="small text-muted">ยังไม่มีบัญชี?</span>
+                    <a href="{% url 'register' %}" class="small link-pastel ms-1">สมัครสมาชิกที่นี่</a>
+                </div>
+            </form>
         </div>
     </div>
 </div>

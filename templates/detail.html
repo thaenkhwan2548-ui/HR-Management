@@ -73,10 +73,16 @@
 
             </div>
             <!-- ปุ่มจัดการ -->
-            <div class="card-footer text-center py-3 bg-light">
-                <a href="{% url 'index' %}" class="btn btn-secondary px-4 me-2">กลับหน้าหลัก</a>
+            <div class="card-footer text-center py-3 bg-light d-flex justify-content-center gap-2 flex-wrap">
+                <a href="{% url 'index' %}" class="btn btn-secondary px-3">กลับหน้าหลัก</a>
+                
+                <!-- ปุ่มดูสลิปเงินเดือน -->
+                <a href="{% url 'payslip' employee.pk %}" class="btn btn-success px-3">
+                    <i class="fa-solid fa-file-invoice-dollar me-1"></i> ดูสลิปเงินเดือน
+                </a>
+
                 {% if perms.myapp.change_employee %}
-                    <a href="{% url 'update' employee.pk %}" class="btn btn-warning px-4">แก้ไขข้อมูล</a>
+                    <a href="{% url 'update' employee.pk %}" class="btn btn-warning px-3">แก้ไขข้อมูล</a>
                 {% endif %}
             </div>
         </div>

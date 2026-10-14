@@ -1,50 +1,93 @@
 {% extends 'basetemplate.html' %}
 {% block content %}
-<div class="container mt-4">
-    <h3 class="fw-bold mb-4">⏱️ บันทึกเวลาทำงาน (Time Attendance)</h3>
+<div class="container-fluid py-4">
     
-    <!-- ฟอร์มสแกน / ลงเวลา -->
-    <div class="card p-3 mb-4 shadow-sm">
-        <h5>ลงเวลาเข้า - ออกงาน</h5>
+    <!-- ส่วนหัวข้อหลักของระบบ -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark m-0">ระบบบันทึกเวลาปฏิบัติงาน (Time & Attendance)</h3>
+            <p class="text-muted small m-0 mt-1">บันทึกและตรวจสอบเวลาการปฏิบัติงานประจำวันของบุคลากรภายในองค์กร</p>
+        </div>
+    </div>
+    
+    <!-- ส่วนฟอร์มบันทึกเวลา (Check-in / Check-out) -->
+    <div class="card border-0 shadow-sm p-4 mb-4 bg-white" style="border-radius: 1rem;">
+        <h5 class="fw-bold mb-3 text-secondary" style="font-size: 1rem;">บันทึกเวลาเข้า - ออกปฏิบัติงาน</h5>
         <form method="POST" class="row g-3 align-items-center">
             {% csrf_token %}
             <div class="col-md-5">
-                <select name="employee_id" class="form-select" required>
-                    <option value="">-- เลือกชื่อพนักงาน --</option>
+                <label class="form-label small fw-semibold text-secondary">รายชื่อบุคลากร</label>
+                <select name="employee_id" class="form-select border border-secondary-subtle shadow-sm py-2" style="border-radius: 0.5rem;" required>
+                    <option value="" disabled selected>-- กรุณาเลือกรายชื่อพนักงาน --</option>
                     {% for emp in employees %}
                         <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }} ({{ emp.get_department_display }})</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-md-7">
-                <button type="submit" name="action" value="check_in" class="btn btn-success me-2">เข้างาน (Check-in)</button>
-                <button type="submit" name="action" value="check_out" class="btn btn-danger">ออกงาน (Check-out)</button>
+            <div class="col-md-7 d-flex align-items-end gap-2 pt-2 pt-md-0">
+                <button type="submit" name="action" value="check_in" class="btn btn-success px-4 py-2 fw-semibold shadow-sm" style="border-radius: 0.5rem;">
+                    <i class="fa-solid fa-right-to-bracket me-1"></i> บันทึกเวลาเข้างาน
+                </button>
+                <button type="submit" name="action" value="check_out" class="btn btn-danger px-4 py-2 fw-semibold shadow-sm" style="border-radius: 0.5rem;">
+                    <i class="fa-solid fa-right-from-bracket me-1"></i> บันทึกเวลาออกงาน
+                </button>
             </div>
         </form>
     </div>
 
-    <!-- ตารางประวัติการลงเวลา -->
-    <table class="table table-bordered table-hover">
-        <thead class="table-light">
-            <tr>
-                <th>วันที่</th>
-                <th>พนักงาน</th>
-                <th>เวลาเข้างาน</th>
-                <th>เวลาออกงาน</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for att in attendances %}
-            <tr>
-                <td>{{ att.date }}</td>
-                <td>{{ att.employee }}</td>
-                <td><span class="text-success">{{ att.check_in|default:"-" }}</span></td>
-                <td><span class="text-danger">{{ att.check_out|default:"-" }}</span></td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4" class="text-center text-muted">ยังไม่มีบันทึกเวลา</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- ส่วนตารางประวัติการลงเวลา -->
+    <div class="card border-0 shadow-sm bg-white" style="border-radius: 1rem; overflow: hidden;">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h6 class="mb-0 fw-bold text-dark">ประวัติการบันทึกเวลาปฏิบัติงานประจำวัน</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary small">
+                        <tr>
+                            <th class="py-3 ps-4 border-0">วันที่ปฏิบัติงาน</th>
+                            <th class="py-3 border-0">ชื่อ - สกุลบุคลากร</th>
+                            <th class="py-3 border-0 text-center">เวลาเข้างาน</th>
+                            <th class="py-3 border-0 text-center pe-4">เวลาออกงาน</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for att in attendances %}
+                        <tr>
+                            <td class="ps-4 text-muted small">{{ att.date }}</td>
+                            <td class="fw-semibold text-dark">{{ att.employee }}</td>
+                            <td class="text-center">
+                                {% if att.check_in %}
+                                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-semibold">
+                                        {{ att.check_in }} น.
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center pe-4">
+                                {% if att.check_out %}
+                                    <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill fw-semibold">
+                                        {{ att.check_out }} น.
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">ปฏิบัติงานอยู่</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-5">
+                                <div class="fs-1 mb-2 opacity-50">📋</div>
+                                ไม่พบข้อมูลประวัติการบันทึกเวลาในระบบ
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

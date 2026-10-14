@@ -1,20 +1,40 @@
 {% extends 'basetemplate.html' %}
 {% block content %}
-<div class="container mt-4">
-    <h2 class="text-center fw-bold mb-4">รายชื่อพนักงาน</h2>
-
-    <!-- ส่วนค้นหา และ ปุ่มเพิ่มพนักงาน -->
-    <div class="row mb-4 align-items-center">
-        <div class="col-md-8">
-            <form method="GET" class="d-flex shadow-sm">
-                <input type="text" name="q" class="form-control me-2" placeholder="ค้นหาชื่อ, แผนก..." value="{{ request.GET.q }}">
-                <button type="submit" class="btn btn-primary px-4">ค้นหา</button>
-            </form>
+<div class="container-fluid py-3 mb-5">
+    
+    <!-- ส่วนหัวหน้า และ ปุ่มเพิ่มพนักงาน -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h4 class="fw-bold text-dark m-0">
+                <i class="fa-solid fa-users-gear text-primary me-2"></i>รายชื่อพนักงาน
+            </h4>
+            <p class="text-muted small m-0 mt-1">จัดการข้อมูลบุคลากรและเรียกดูโปรไฟล์พนักงานในองค์กร</p>
         </div>
-        <div class="col-md-4 text-end">
+        <div>
             {% if perms.myapp.add_employee %}
-            <a href="{% url 'create' %}" class="btn btn-success shadow-sm">+ เพิ่มพนักงาน</a>
+            <a href="{% url 'create' %}" class="btn btn-success px-4 py-2 fw-semibold shadow-sm rounded-pill" style="font-size: 0.9rem;">
+                <i class="fa-solid fa-user-plus me-1"></i> เพิ่มพนักงาน
+            </a>
             {% endif %}
+        </div>
+    </div>
+
+    <!-- ส่วนแถบค้นหา -->
+    <div class="card border-0 shadow-sm mb-4 bg-white" style="border-radius: 1rem;">
+        <div class="card-body p-3">
+            <form method="GET" class="row g-2 align-items-center">
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 ps-3 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" name="q" class="form-control border-0 bg-light py-2 shadow-none" placeholder="ค้นหาชื่อ, แผนก..." value="{{ request.GET.q }}">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm" style="border-radius: 0.5rem;">
+                        ค้นหา
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -22,12 +42,13 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-4">
         {% for emp in page_obj %}
         <div class="col">
-            <div class="card h-100 shadow-sm border-0">
+            <div class="card h-100 shadow-sm border-0" style="border-radius: 1rem; overflow: hidden;">
+                
                 <!-- รูปภาพ (แสดงด้านบนสุดของการ์ด) -->
                 {% if emp.photo %}
                     <img src="{{ emp.photo.url }}" class="card-img-top" alt="รูปพนักงาน" style="height: 180px; object-fit: cover;">
                 {% else %}
-                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 180px; font-size: 4rem;">
+                    <div class="card-img-top bg-secondary bg-opacity-25 text-secondary d-flex align-items-center justify-content-center" style="height: 180px; font-size: 4rem;">
                         👤
                     </div>
                 {% endif %}
@@ -39,59 +60,93 @@
                             {{ emp.title }}{{ emp.first_name }} {{ emp.last_name }}
                         </a>
                     </h6>
-                    <p class="card-text text-muted small mb-2">
-                        ที่อยู่ : {{ emp.address|default:"-"|truncatechars:25 }}
+                    <p class="card-text text-muted small mb-2 text-truncate">
+                        ที่อยู่ : {{ emp.address|default:"-" }}
                     </p>
                 </div>
 
-                <!-- ข้อมูลรายละเอียดย่อย (ใช้ List Group ไม่มีเส้นขอบ) -->
-                <ul class="list-group list-group-flush small text-muted">
-                    <li class="list-group-item py-1 border-0">เพศ : {{ emp.get_gender_display }}</li>
-                    <li class="list-group-item py-1 border-0">วันเกิด : {{ emp.birth_date|date:"d M. Y" }}</li>
-                    <li class="list-group-item py-1 border-0">แผนก : {{ emp.get_department_display }}</li>
-                    <li class="list-group-item py-1 border-0">เงินเดือน : {{ emp.salary }} บาท</li>
+                <!-- ข้อมูลรายละเอียดย่อย -->
+                <ul class="list-group list-group-flush small text-muted px-2">
+                    <li class="list-group-item py-1 border-0 bg-transparent">เพศ : {{ emp.get_gender_display }}</li>
+                    <li class="list-group-item py-1 border-0 bg-transparent">วันเกิด : {{ emp.birth_date|date:"d M. Y" }}</li>
+                    <li class="list-group-item py-1 border-0 bg-transparent">แผนก : {{ emp.get_department_display }}</li>
+                    <li class="list-group-item py-1 border-0 bg-transparent fw-semibold text-success">เงินเดือน : {{ emp.salary }} บาท</li>
                 </ul>
 
                 <!-- ปุ่มจัดการ (แก้ไข / ลบ) ไว้ล่างสุดของการ์ด -->
-                <div class="card-footer bg-white border-top-0 pt-0 pb-3">
+                <div class="card-footer bg-white border-top-0 pt-0 pb-3 d-flex gap-2">
                     {% if perms.myapp.change_employee %}
-                        <a href="{% url 'update' emp.pk %}" class="btn btn-sm btn-outline-warning border-0 fs-5" title="แก้ไข">📝</a>
+                        <a href="{% url 'update' emp.pk %}" class="btn btn-sm btn-outline-warning w-50 py-1" title="แก้ไข">
+                            <i class="fa-solid fa-pen-to-square me-1"></i> แก้ไข
+                        </a>
                     {% endif %}
                     {% if perms.myapp.delete_employee %}
-                        <a href="{% url 'delete' emp.pk %}" class="btn btn-sm btn-outline-danger border-0 fs-5" title="ลบ">🗑️</a>
+                        <a href="{% url 'delete' emp.pk %}" class="btn btn-sm btn-outline-danger w-50 py-1" title="ลบ" onclick="return confirm('ยืนยันการลบข้อมูลพนักงานคนนี้หรือไม่?');">
+                            <i class="fa-solid fa-trash-can me-1"></i> ลบ
+                        </a>
                     {% endif %}
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="col-12 text-center text-muted my-5">
-            <h5 class="fw-light">ไม่พบข้อมูลพนักงาน</h5>
+        <div class="col-12">
+            <div class="card border-0 shadow-sm text-center py-5 bg-white" style="border-radius: 1rem;">
+                <div class="card-body">
+                    <div class="fs-1 text-muted mb-2 opacity-50">📂</div>
+                    <h5 class="fw-bold text-dark">ไม่พบข้อมูลพนักงาน</h5>
+                    <p class="text-muted small mb-0">ไม่พบรายชื่อพนักงานที่ตรงกับเงื่อนไขการค้นหาของคุณ</p>
+                </div>
+            </div>
         </div>
         {% endfor %}
     </div>
 
-    <!-- ระบบแบ่งหน้า (Pagination) -->
-    <div class="d-flex justify-content-center mt-4 mb-5 align-items-center">
-        
-        <!-- ปุ่มก่อนหน้า -->
-        {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-secondary me-2 shadow-sm">
-                &laquo; ก่อนหน้า
-            </a>
-        {% endif %}
+    <!-- ระบบแบ่งหน้า (Pagination) แบบ 1, 2, 3... -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-4 mb-5">
+        <ul class="pagination justify-content-center">
+            
+            <!-- ปุ่มย้อนกลับ (Previous) -->
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo; ก่อนหน้า</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo; ก่อนหน้า</span>
+                </li>
+            {% endif %}
 
-        <!-- หน้าปัจจุบัน -->
-        <span class="badge bg-light text-dark border p-2 px-4 shadow-sm fs-6">
-            หน้า {{ page_obj.number|default:"1" }} จาก {{ page_obj.paginator.num_pages|default:"1" }}
-        </span>
+            <!-- วนลูปแสดงเลขหน้าทั้งหมด (1, 2, 3...) -->
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
 
-        <!-- ปุ่มถัดไป -->
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-outline-secondary ms-2 shadow-sm">
-                ถัดไป &raquo;
-            </a>
-        {% endif %}
-        
-    </div>
+            <!-- ปุ่มถัดไป (Next) -->
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                        <span aria-hidden="true">ถัดไป &raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">ถัดไป &raquo;</span>
+                </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+    {% endif %}
 </div>
 {% endblock %}
