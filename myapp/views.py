@@ -53,7 +53,6 @@ def index(request):
     employees = Employee.objects.all().order_by('-id')
     
     if query:
-        # แยกคำค้นหาด้วยเว้นวรรค รองรับการพิมพ์ค้นหาหลายคำ และค้นหาได้ทุกพยางค์แบบทุกตัวอักษร
         keywords = query.split()
         for kw in keywords:
             employees = employees.filter(
@@ -142,7 +141,6 @@ def profile(request):
         if form.is_valid():
             user = form.save()
             
-            # ตรวจสอบและบันทึกไฟล์รูปภาพโปรไฟล์ผ่าน request.FILES
             if 'profile_image' in request.FILES:
                 try:
                     user.profile.image = request.FILES['profile_image']
@@ -166,29 +164,62 @@ def custom_permission_denied_view(request, exception=None):
     return render(request, '403.html', status=403)
 
 
-# ================= ฟังก์ชันระบบแอดมิน (Admin Only) =================
+# ================= ฟังก์ชันระบบแอดมินและบันทึกเวลา (รองรับพนักงานทั่วไป) =================
 
 @login_required
-@user_passes_test(is_admin, login_url='ess_dashboard')
 def attendance_view(request):
-    attendances = Attendance.objects.all().order_by('-date')
+    # ค้นหาข้อมูลพนักงานที่ผูกกับ User ปัจจุบัน
+    try:
+        current_employee = Employee.objects.get(
+            Q(first_name__iexact=request.user.username) | 
+            Q(last_name__iexact=request.user.username)
+        )
+    except Employee.DoesNotExist:
+        current_employee = Employee.objects.create(
+            first_name=request.user.username,
+            last_name='',
+            position='พนักงานทั่วไป',
+            department='IT',
+            birth_date=date(2000, 1, 1),
+            hire_date=date.today(),
+            salary=0.00
+        )
+
+    # ถ้าเป็น Admin ให้เห็นทั้งหมด ถ้าไม่ใช่ให้เห็นเฉพาะของตัวเอง
+    if request.user.is_staff:
+        attendances = Attendance.objects.all().order_by('-date')
+    else:
+        attendances = Attendance.objects.filter(employee=current_employee).order_by('-date')
+
     if request.method == 'POST':
         emp_id = request.POST.get('employee_id')
         action = request.POST.get('action')
-        employee = get_object_or_404(Employee, id=emp_id)
+        
+        # ถ้าเป็น Admin เลือกพนักงานจากฟอร์มได้ แต่ถ้าเป็นพนักงานทั่วไปใช้ชื่อตัวเอง
+        if request.user.is_staff and emp_id:
+            employee = get_object_or_404(Employee, id=emp_id)
+        else:
+            employee = current_employee
+
         today = date.today()
         now = datetime.now().time()
         
         att, created = Attendance.objects.get_or_create(employee=employee, date=today)
         if action == 'check_in':
             att.check_in = now
+            messages.success(request, f'บันทึกเวลาเข้างานของ {employee.first_name} เวลา {now.strftime("%H:%M")} น. สำเร็จ')
         elif action == 'check_out':
             att.check_out = now
+            messages.success(request, f'บันทึกเวลาออกงานของ {employee.first_name} เวลา {now.strftime("%H:%M")} น. สำเร็จ')
         att.save()
         return redirect('attendance')
 
     employees = Employee.objects.all()
-    return render(request, 'attendance.html', {'attendances': attendances, 'employees': employees})
+    return render(request, 'attendance.html', {
+        'attendances': attendances, 
+        'employees': employees,
+        'current_employee': current_employee
+    })
 
 @login_required
 @user_passes_test(is_admin, login_url='ess_dashboard')
@@ -372,7 +403,6 @@ def api_page(request):
 def dashboard_view(request):
     total_employees = Employee.objects.count()
     
-    # เพิ่มข้อมูลประวัติการคำนวณค่าเดินทาง
     travel_history = TravelCalculationHistory.objects.all().order_by('-id')
     total_travel_requests = travel_history.count()
     recent_travels = travel_history[:5]
