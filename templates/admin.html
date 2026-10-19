@@ -1,0 +1,95 @@
+{% extends 'basetemplate.html' %}
+
+{% block content %}
+<!-- สไตล์โทนสีพาสเทลและองค์ประกอบ UI ระดับองค์กรสำหรับหน้าแอดมิน -->
+<style>
+    .bg-portal-gradient { background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%) !important; }
+    .text-portal-dark { color: #1e293b !important; }
+</style>
+
+<div class="container-fluid py-3 mb-5">
+    
+    <!-- แบนเนอร์หัวข้อหน้าแอดมินจัดการคำขอ -->
+    <div class="card border-0 shadow-sm mb-4 bg-portal-gradient" style="border-radius: 1rem;">
+        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="fw-bold text-portal-dark mb-1">
+                    <i class="fa-solid fa-clipboard-check text-primary me-2"></i>ระบบอนุมัติคำขอพนักงาน (Admin Approval Dashboard)
+                </h4>
+                <p class="mb-0 text-muted small">ตรวจสอบและจัดการอนุมัติหรือปฏิเสธคำขอต่างๆ ของพนักงานในระบบ</p>
+            </div>
+            <span class="badge bg-white text-primary border px-3 py-2 rounded-pill shadow-sm small fw-semibold">
+                <i class="fa-solid fa-shield-halved me-1"></i> ผู้ดูแลระบบ
+            </span>
+        </div>
+    </div>
+
+    <!-- ตารางแสดงรายการคำขอทั้งหมด (มีปุ่มอนุมัติ/ปฏิเสธสำหรับแอดมิน) -->
+    <div class="card border-0 shadow-sm" style="border-radius: 1rem;">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center" style="border-radius: 1rem 1rem 0 0;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-list-check text-primary"></i>
+                <h6 class="mb-0 fw-bold text-portal-dark">รายการคำขอที่รอการตรวจสอบ</h6>
+            </div>
+            <span class="badge bg-light text-secondary border px-3 py-1 rounded-pill small">จัดการสถานะคำขอ</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive p-2">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary small">
+                        <tr>
+                            <th class="py-3 border-0">วันที่ยื่น</th>
+                            <th class="py-3 border-0">พนักงาน</th>
+                            <th class="py-3 border-0">ประเภท</th>
+                            <th class="py-3 border-0">รายละเอียด</th>
+                            <th class="py-3 border-0 text-center">จัดการสถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in requests %}
+                            <tr>
+                                <td class="small text-muted">{{ req.created_at|date:"d/m/Y H:i" }}</td>
+                                <td class="fw-semibold">{{ req.employee.first_name }} {{ req.employee.last_name }}</td>
+                                <td>
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">{{ req.request_type }}</span>
+                                </td>
+                                <td class="small">
+                                    {{ req.title }}
+                                    {% if req.amount %}
+                                        <span class="text-muted">({{ req.amount }})</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if req.status == 'approved' %}
+                                        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">อนุมัติแล้ว</span>
+                                    {% elif req.status == 'rejected' %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">ไม่อนุมัติ</span>
+                                    {% else %}
+                                        <!-- ปุ่มกดอนุมัติ / ปฏิเสธ สำหรับแอดมิน -->
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="{% url 'update_request_status' req.id 'approved' %}" class="btn btn-sm btn-success px-3 py-1 shadow-sm" style="border-radius: 0.5rem;">
+                                                <i class="fa-solid fa-check me-1"></i> อนุมัติ
+                                            </a>
+                                            <a href="{% url 'update_request_status' req.id 'rejected' %}" class="btn btn-sm btn-danger px-3 py-1 shadow-sm" style="border-radius: 0.5rem;">
+                                                <i class="fa-solid fa-xmark me-1"></i> ปฏิเสธ
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-5">
+                                    <div class="fs-1 mb-2 opacity-50">🎉</div>
+                                    ไม่มีรายการคำขอที่รอการตรวจสอบในขณะนี้
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,109 +1,202 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <title>แดชบอร์ดภาพรวมองค์กร</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { background-color: #f8fafc; font-family: 'Prompt', sans-serif; color: #334155; }
-        .card-stat { border-radius: 12px; border: none; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); transition: transform 0.2s; }
-        .card-stat:hover { transform: translateY(-3px); }
-    </style>
-</head>
-<body>
-    <div class="container my-5" style="max-width: 1400px;">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h3 class="fw-bold text-dark mb-1"><i class="fa-solid fa-chart-pie text-primary me-2"></i> แดชบอร์ดสรุปสถิติภาพรวมองค์กร</h3>
-                <p class="text-muted small mb-0">ระบบคำนวณค่าเดินทางอัจฉริยะ</p>
-            </div>
-            <a href="{% url 'api_page' %}" class="btn btn-outline-secondary fw-medium px-3">
-                <i class="fa-solid fa-arrow-left me-1"></i> กลับสู่หน้าจัดการระบบ
-            </a>
+{% extends 'basetemplate.html' %}
+{% block content %}
+<div class="container-fluid py-3 mb-5">
+    
+    <!-- ส่วนหัวแดชบอร์ด -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark m-0">
+                <i class="fa-solid fa-chart-pie text-primary me-2"></i>แดชบอร์ดภาพรวมระบบ HRMS
+            </h4>
+            <p class="text-muted small m-0 mt-1">สถิติและข้อมูลสรุปการปฏิบัติงานภายในองค์กร</p>
         </div>
+        <div class="badge bg-primary-subtle text-primary px-3 py-2 fw-semibold" style="border-radius: 2rem;">
+            <i class="fa-solid fa-circle-check me-1"></i> อัปเดตล่าสุดเรียบร้อย
+        </div>
+    </div>
+
+    <!-- การ์ดสรุป 4 กล่อง -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
         
-        <!-- Stats Row -->
-        <div class="row g-4 mb-4">
-            <!-- การ์ดที่ 1: พนักงานทั้งหมด -->
-            <div class="col-md-4">
-                <div class="card card-stat bg-primary text-white p-3">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-white-50 mb-1">พนักงานทั้งหมดในระบบ</h6>
-                            <h2 class="display-6 fw-bold mb-0">{{ total_employees }} <span class="fs-5 fw-normal">คน</span></h2>
-                        </div>
-                        <div class="fs-1 text-white-50"><i class="fa-solid fa-users"></i></div>
+        <!-- กล่องที่ 1: พนักงานทั้งหมด -->
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100 p-3" style="border-radius: 1rem;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-15 text-primary p-3 rounded-4 me-3 fs-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="fa-solid fa-users"></i>
                     </div>
-                </div>
-            </div>
-
-            <!-- การ์ดที่ 2: ประวัติการคำนวณทั้งหมด -->
-            <div class="col-md-4">
-                <div class="card card-stat bg-success text-white p-3">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-white-50 mb-1">รายการคำนวณค่าเดินทาง</h6>
-                            <h2 class="display-6 fw-bold mb-0">{{ travel_histories|length }} <span class="fs-5 fw-normal">รายการ</span></h2>
-                        </div>
-                        <div class="fs-1 text-white-50"><i class="fa-solid fa-route"></i></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- การ์ดที่ 3: สถานะระบบ -->
-            <div class="col-md-4">
-                <div class="card card-stat bg-dark text-white p-3">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-white-50 mb-1">สถานะการทำงาน</h6>
-                            <h4 class="fw-bold mb-0 mt-2 text-success"><i class="fa-solid fa-circle-check me-1"></i> ระบบปกติ (Online)</h4>
-                        </div>
-                        <div class="fs-1 text-white-50"><i class="fa-solid fa-server"></i></div>
+                    <div>
+                        <span class="text-muted small fw-semibold d-block mb-1">พนักงานทั้งหมด</span>
+                        <h3 class="fw-bold text-dark m-0">{{ total_employees }} <span class="fs-6 fw-normal text-muted">คน</span></h3>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ตารางแสดงประวัติการคำนวณค่าเดินทาง -->
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-header bg-white py-3 px-4 border-bottom">
-                <h5 class="card-title mb-0 fw-bold text-dark"><i class="fa-solid fa-car-side me-2 text-warning"></i> ประวัติการคำนวณค่าเดินทางล่าสุด</h5>
+        <!-- กล่องที่ 2: จำนวนรายการคำนวณค่าเดินทาง (เพิ่มใหม่) -->
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100 p-3" style="border-radius: 1rem;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-warning bg-opacity-15 text-warning p-3 rounded-4 me-3 fs-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="fa-solid fa-route"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small fw-semibold d-block mb-1">คำนวณค่าเดินทาง</span>
+                        <h3 class="fw-bold text-dark m-0">{{ total_travel_requests }} <span class="fs-6 fw-normal text-muted">รายการ</span></h3>
+                    </div>
+                </div>
             </div>
-            <div class="card-body p-4">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ชื่อพนักงาน</th>
-                                <th class="text-center">ระยะทางจากบ้าน (กม.)</th>
-                                <th class="text-end">เงินอุดหนุนค่าเดินทาง (บาท)</th>
-                                <th class="text-end">เวลาที่คำนวณ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in travel_histories %}
-                            <tr>
-                                <td class="fw-semibold text-dark"><i class="fa-solid fa-user-circle text-primary me-2"></i> {{ item.employee_name }}</td>
-                                <td class="text-center fw-medium">{{ item.distance }} กม.</td>
-                                <td class="text-end text-success fw-bold">฿{{ item.allowance }}</td>
-                                <td class="text-end text-muted small">{{ item.calculated_at|date:"d/m/Y H:i" }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center text-muted py-5">
-                                    <i class="fa-solid fa-folder-open fa-2x mb-2 text-secondary"></i><br>
-                                    ยังไม่มีประวัติการคำนวณค่าเดินทางในระบบ ลองไปที่หน้าจัดการระบบแล้วกดคำนวณดู
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+        </div>
+
+        <!-- กล่องที่ 3: อนุมัติแล้ว -->
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100 p-3" style="border-radius: 1rem;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-success bg-opacity-15 text-success p-3 rounded-4 me-3 fs-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small fw-semibold d-block mb-1">อนุมัติแล้ว</span>
+                        <h3 class="fw-bold text-dark m-0">{{ approved_count }} <span class="fs-6 fw-normal text-muted">รายการ</span></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- กล่องที่ 4: รอดำเนินการ / ปฏิเสธ -->
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100 p-3" style="border-radius: 1rem;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-danger bg-opacity-15 text-danger p-3 rounded-4 me-3 fs-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small fw-semibold d-block mb-1">รอดำเนินการ / ปฏิเสธ</span>
+                        <h3 class="fw-bold text-dark m-0">{{ pending_count }} / {{ rejected_count }} <span class="fs-6 fw-normal text-muted">รายการ</span></h3>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- ส่วนแสดงกราฟ -->
+    <div class="row g-4 mb-4">
+        <!-- กราฟที่ 1: สัดส่วนประเภทคำขอ -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 p-3" style="border-radius: 1rem;">
+                <h6 class="fw-bold text-dark mb-3">
+                    <i class="fa-solid fa-chart-pie me-2 text-primary"></i>สัดส่วนประเภทคำขอ (Leave / Expense / OT)
+                </h6>
+                <div style="height: 260px;" class="d-flex align-items-center justify-content-center">
+                    <canvas id="requestTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- กราฟที่ 2: สรุปสถานะการอนุมัติ -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 p-3" style="border-radius: 1rem;">
+                <h6 class="fw-bold text-dark mb-3">
+                    <i class="fa-solid fa-chart-column me-2 text-primary"></i>สรุปสถานะการอนุมัติคำขอ
+                </h6>
+                <div style="height: 260px;" class="d-flex align-items-center justify-content-center">
+                    <canvas id="approvalStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ส่วนตารางแสดงประวัติการทำรายการคำนวณค่าเดินทางย้อนหลัง (เพิ่มใหม่) -->
+    <div class="card border-0 shadow-sm" style="border-radius: 1rem;">
+        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+            <h5 class="fw-bold text-dark m-0">
+                <i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>ประวัติการทำรายการคำนวณค่าเดินทางย้อนหลัง
+            </h5>
+            <p class="text-muted small mt-1 mb-0">แสดงรายการคำนวณระยะทางและเบี้ยเลี้ยงล่าสุดในระบบ</p>
+        </div>
+        <div class="card-body px-4 pb-4">
+            <div class="table-responsive">
+                <table class="table align-middle table-hover">
+                    <thead class="table-light text-secondary small">
+                        <tr>
+                            <th class="py-3">รหัสรายการ</th>
+                            <th class="py-3">ชื่อพนักงาน / ผู้ทำรายการ</th>
+                            <th class="py-3">ระยะทาง</th>
+                            <th class="py-3">เบี้ยเลี้ยง / เงินอุดหนุน</th>
+                            <th class="py-3 text-center">สถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for travel in travel_history %}
+                        <tr>
+                            <td class="fw-semibold text-muted">#TR-{{ travel.id }}</td>
+                            <td class="fw-bold text-dark">{{ travel.employee_name|default:"พนักงานทั่วไป" }}</td>
+                            <td><span class="badge bg-light text-dark border">{{ travel.distance }} กม.</span></td>
+                            <td class="fw-bold text-success">{{ travel.allowance }} บาท</td>
+                            <td class="text-center">
+                                <span class="badge bg-success-subtle text-success px-3 py-2" style="border-radius: 2rem;">สำเร็จ</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">ยังไม่มีประวัติการทำรายการคำนวณค่าเดินทางในระบบ</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Script สร้างกราฟ Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // 1. Chart สัดส่วนประเภทคำขอ
+    const ctx1 = document.getElementById('requestTypeChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+            labels: ['ขอลาหยุด', 'เบิกค่าใช้จ่าย', 'ขอทำ OT'],
+            datasets: [{
+                data: [{{ leave_count }}, {{ expense_count }}, {{ ot_count }}],
+                backgroundColor: ['#38bdf8', '#f59e0b', '#a855f7'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    // 2. Chart สรุปสถานะการอนุมัติ
+    const ctx2 = document.getElementById('approvalStatusChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['อนุมัติแล้ว', 'รออนุมัติ', 'ไม่อนุมัติ'],
+            datasets: [{
+                label: 'จำนวนรายการ',
+                data: [{{ approved_count }}, {{ pending_count }}, {{ rejected_count }}],
+                backgroundColor: ['#22c55e', '#eab308', '#ef4444'],
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,107 +1,126 @@
 {% extends 'basetemplate.html' %}
+
 {% block content %}
-<div class="container-fluid py-4 mb-5">
+<div class="container-fluid py-3 mb-5">
     
-    <!-- ส่วนหัวของหน้า -->
-    <div class="card border-0 shadow-sm mb-4 bg-white" style="border-radius: 0.75rem;">
-        <div class="card-body p-4">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-                <div>
-                    <h4 class="fw-bold text-dark m-0">
-                        <i class="fa-solid fa-chart-line text-primary me-2"></i>รายงานสรุปภาพรวมและแบบยื่นเอกสารอนุมัติ (Financial & Tax Reports)
-                    </h4>
-                    <p class="text-muted small m-0 mt-1">รายงานสรุปค่าใช้จ่ายด้านบุคลากร รายการนำส่งเงินสมทบประกันสังคม และภาษีหัก ณ ที่จ่าย ประจำงวดงบประมาณ</p>
-                </div>
+    <!-- ส่วนหัวรายงาน -->
+    <div class="card border-0 shadow-sm mb-4 bg-white" style="border-radius: 1rem;">
+        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="fw-bold text-portal-dark mb-1">
+                    <i class="fa-solid fa-chart-line text-primary me-2"></i>รายงานสรุปภาพรวมและสถิติทางการเงิน (Financial & Tax Reports)
+                </h4>
+                <p class="mb-0 text-muted small">รายงานสรุปค่าใช้จ่ายด้านบุคลากร รายการนำส่งเงินสมทบประกันสังคม และภาษีหัก ณ ที่จ่าย ประจำงวดงบประมาณ</p>
             </div>
         </div>
     </div>
 
-    <!-- ส่วนการ์ดสรุปยอดการเงิน (Executive Key Metrics) -->
+    <!-- 1. การ์ดสรุปตัวเลขสถิติ -->
     <div class="row g-4 mb-4">
-        
-        <!-- ยอดจ่ายเงินเดือนรวม -->
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm text-white bg-primary bg-gradient p-3" style="border-radius: 0.75rem;">
+            <div class="card border-0 shadow-sm text-white p-3" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 1rem;">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="small fw-semibold text-white-50">งบประมาณจ่ายมวลรวมค่าตอบแทน</span>
-                        <i class="fa-solid fa-wallet fs-4 text-white-50"></i>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="small fw-semibold opacity-75">งบประมาณจ่ายมวลรวมค่าตอบแทน</span>
+                        <i class="fa-solid fa-wallet fs-4 opacity-75"></i>
                     </div>
-                    <h3 class="fw-bold mb-0">฿{{ total_salary|floatformat:2 }}</h3>
-                    <small class="text-white-50 mt-1 d-block">รวมยอดการจ่ายเงินเดือนและค่าตอบแทนบุคลากร</small>
+                    <h3 class="fw-bold mb-1">฿{{ total_salary|floatformat:2 }}</h3>
+                    <p class="small mb-0 opacity-75">รวมยอดการจ่ายเงินเดือนและค่าตอบแทนบุคลากร</p>
                 </div>
             </div>
         </div>
 
-        <!-- ยอดส่งประกันสังคมรวม (สปส. 1-10) -->
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm text-dark bg-warning bg-gradient p-3" style="border-radius: 0.75rem;">
+            <div class="card border-0 shadow-sm text-dark p-3" style="background: linear-gradient(135deg, #fde047 0%, #eab308 100%); border-radius: 1rem;">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="small fw-semibold text-dark-50">ยอดนำส่งเงินสมทบประกันสังคม (สปส. 1-10)</span>
-                        <i class="fa-solid fa-file-shield fs-4 opacity-50"></i>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="small fw-semibold opacity-75">ยอดนำส่งเงินสมทบประกันสังคม (สปส. 1-10)</span>
+                        <i class="fa-solid fa-file-shield fs-4 opacity-75"></i>
                     </div>
-                    <h3 class="fw-bold mb-0">฿{{ total_sso|floatformat:2 }}</h3>
-                    <small class="text-secondary mt-1 d-block">สำหรับนำส่งสำนักงานประกันสังคมประจำงวด</small>
+                    <h3 class="fw-bold mb-1">฿{{ total_sso|floatformat:2 }}</h3>
+                    <p class="small mb-0 opacity-75">สำหรับนำส่งสำนักงานประกันสังคมประจำงวด</p>
                 </div>
             </div>
         </div>
 
-        <!-- ยอดภาษีหัก ณ ที่จ่าย (ภ.ง.ด.1) -->
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm text-white bg-danger bg-gradient p-3" style="border-radius: 0.75rem;">
+            <div class="card border-0 shadow-sm text-white p-3" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); border-radius: 1rem;">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="small fw-semibold text-white-50">ยอดภาษีหัก ณ ที่จ่ายนำส่ง (ภ.ง.ด.1)</span>
-                        <i class="fa-solid fa-file-invoice-dollar fs-4 text-white-50"></i>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="small fw-semibold opacity-75">ยอดภาษีหัก ณ ที่จ่าย ที่จ่ายนำส่ง (ภ.ง.ด.1)</span>
+                        <i class="fa-solid fa-file-invoice-dollar fs-4 opacity-75"></i>
                     </div>
-                    <h3 class="fw-bold mb-0">฿{{ total_tax|floatformat:2 }}</h3>
-                    <small class="text-white-50 mt-1 d-block">สำหรับนำส่งกรมสรรพากรตามประมวลรัษฎากร</small>
+                    <h3 class="fw-bold mb-1">฿{{ total_tax|floatformat:2 }}</h3>
+                    <p class="small mb-0 opacity-75">สำหรับนำส่งกรมสรรพากรตามประมวลรัษฎากร</p>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- ส่วนเอกสารนำส่งหน่วยงานราชการ -->
-    <div class="card border-0 shadow-sm bg-white" style="border-radius: 0.75rem;">
+    <!-- 2. กราฟแสดงสถิติงบประมาณและภาษี -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 1rem;">
         <div class="card-header bg-white py-3 border-bottom">
-            <h6 class="mb-0 fw-bold text-dark">
-                <i class="fa-solid fa-file-arrow-down text-secondary me-2"></i>ดาวน์โหลดแบบยื่นและเอกสารประกอบการนำส่ง
+            <h6 class="mb-0 fw-bold text-portal-dark">
+                <i class="fa-solid fa-chart-column text-primary me-2"></i>กราฟแสดงสถิติค่าใช้จ่าย งบประมาณ และภาษี
             </h6>
         </div>
-        <div class="card-body p-4">
-            <div class="row g-3">
-                
-                <!-- แบบฟอร์ม สปส. 1-10 -->
-                <div class="col-md-6">
-                    <div class="p-3 border rounded-3 d-flex justify-content-between align-items-center bg-light">
-                        <div>
-                            <h6 class="fw-bold mb-1 text-dark">แบบรายการนำส่งเงินสมทบ (สปส. 1-10)</h6>
-                            <p class="text-muted small m-0">เอกสารสรุปรายการนำส่งเงินสมทบกองทุนประกันสังคมประจำงวด</p>
-                        </div>
-                        <a href="{% url 'export_sso_report' %}" class="btn btn-primary btn-sm px-3 fw-semibold text-nowrap">
-                            <i class="fa-solid fa-download me-1"></i> ดาวน์โหลดเอกสาร
-                        </a>
-                    </div>
-                </div>
+        <div class="card-body p-4 d-flex justify-content-center">
+            <div style="width: 100%; max-width: 700px; height: 320px;">
+                <canvas id="financialChart"></canvas>
+            </div>
+        </div>
+    </div>
 
-                <!-- แบบฟอร์ม ภ.ง.ด.1 -->
-                <div class="col-md-6">
-                    <div class="p-3 border rounded-3 d-flex justify-content-between align-items-center bg-light">
-                        <div>
-                            <h6 class="fw-bold mb-1 text-dark">แบบยื่นรายการภาษีเงินได้หัก ณ ที่จ่าย (ภ.ง.ด.1)</h6>
-                            <p class="text-muted small m-0">เอกสารสรุปรายการภาษีเงินได้บุคคลธรรมดาหัก ณ ที่จ่าย นำส่งกรมสรรพากร</p>
-                        </div>
-                        <a href="{% url 'export_pnd1_report' %}" class="btn btn-primary btn-sm px-3 fw-semibold text-nowrap">
-                            <i class="fa-solid fa-download me-1"></i> ดาวน์โหลดเอกสาร
-                        </a>
-                    </div>
-                </div>
-
+    <!-- 3. ส่วนปุ่มดาวน์โหลดเอกสารและรายงาน -->
+    <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 1rem;">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h5 class="fw-bold text-portal-dark mb-1">
+                    <i class="fa-solid fa-file-invoice-dollar text-primary me-2"></i>ระบบคำนวณเงินเดือนและค่าตอบแทน (Payroll Management)
+                </h5>
+                <p class="text-muted small mb-0">สรุปการคำนวณเงินเดือน รายการหักประกันสังคม ภาษี ณ ที่จ่าย และยอดชำระสุทธิประจำเดือน</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{% url 'export_bank_file' %}" class="btn btn-primary fw-bold px-3 py-2 shadow-sm" style="border-radius: 0.5rem;">
+                    <i class="fa-solid fa-download me-1"></i> ดาวน์โหลด Text File ธนาคาร
+                </a>
+                <a href="{% url 'export_sso_report' %}" class="btn btn-warning fw-bold px-3 py-2 shadow-sm text-dark" style="border-radius: 0.5rem;">
+                    <i class="fa-solid fa-file-shield me-1"></i> สปส. 1-10
+                </a>
+                <a href="{% url 'export_pnd1_report' %}" class="btn btn-danger fw-bold px-3 py-2 shadow-sm" style="border-radius: 0.5rem;">
+                    <i class="fa-solid fa-file-invoice me-1"></i> ภ.ง.ด.1
+                </a>
             </div>
         </div>
     </div>
 
 </div>
+
+<!-- โหลด Chart.js สำหรับวาดกราฟการเงิน -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctxFinancial = document.getElementById('financialChart').getContext('2d');
+    new Chart(ctxFinancial, {
+        type: 'bar',
+        data: {
+            labels: ['งบประมาณรวม', 'ประกันสังคม (สปส. 1-10)', 'ภาษี (ภ.ง.ด.1)'],
+            datasets: [{
+                label: 'จำนวนเงิน (บาท)',
+                data: [{{ total_salary }}, {{ total_sso }}, {{ total_tax }}],
+                backgroundColor: ['#3b82f6', '#eab308', '#ef4444'],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+</script>
 {% endblock %}

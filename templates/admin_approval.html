@@ -1,0 +1,94 @@
+{% extends 'basetemplate.html' %}
+
+{% block content %}
+<div class="container-fluid py-3 mb-5">
+    
+    <!-- Header Title -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-portal-dark mb-1">
+                <i class="fa-solid fa-list-check text-primary me-2"></i>จัดการคำขออนุมัติ (Admin Approval Dashboard)
+            </h4>
+            <p class="text-muted small mb-0">ตรวจสอบและอนุมัติคำขอที่ส่งมาจากระบบพนักงาน (ESS)</p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm shadow-sm px-3" style="border-radius: 0.5rem;">
+            <i class="fa-solid fa-arrow-left me-1"></i> กลับหน้าภาพรวม
+        </a>
+    </div>
+
+    <!-- Table Management Card -->
+    <div class="card border-0 shadow-sm" style="border-radius: 1rem;">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center" style="border-radius: 1rem 1rem 0 0;">
+            <div class="fw-bold text-secondary">
+                <i class="fa-solid fa-table-list me-1 text-primary"></i> รายการคำขอทั้งหมดของพนักงาน
+            </div>
+            <span class="badge bg-light text-primary border px-3 py-1 rounded-pill small">ระบบบริหารจัดการ</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive p-2">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary small">
+                        <tr>
+                            <th class="py-3 border-0">วันที่ยื่น</th>
+                            <th class="py-3 border-0">ชื่อพนักงาน</th>
+                            <th class="py-3 border-0">ประเภทคำขอ</th>
+                            <th class="py-3 border-0">รายละเอียด / เหตุผล</th>
+                            <th class="py-3 border-0 text-center">สถานะ</th>
+                            <th class="py-3 border-0 text-center">จัดการสถานะ (Action)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in requests_list %}
+                        <tr>
+                            <td class="small text-muted">{{ req.created_at|date:"d/m/Y H:i" }}</td>
+                            <td class="fw-semibold">{{ req.employee.first_name }} {{ req.employee.last_name }}</td>
+                            <td>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">
+                                    {{ req.request_type }}
+                                </span>
+                            </td>
+                            <td class="small">
+                                {{ req.title }} 
+                                {% if req.amount %}
+                                    <span class="text-muted">({{ req.amount }} วัน)</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if req.status == 'approved' %}
+                                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">อนุมัติแล้ว</span>
+                                {% elif req.status == 'rejected' %}
+                                    <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">ไม่อนุมัติ</span>
+                                {% else %}
+                                    <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">รอตรวจสอบ</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if req.status == 'pending' %}
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a href="{% url 'update_request_status' req.id 'approved' %}" class="btn btn-success btn-sm px-3 shadow-sm" style="border-radius: 0.4rem;">
+                                            <i class="fa-solid fa-check me-1"></i> อนุมัติ
+                                        </a>
+                                        <a href="{% url 'update_request_status' req.id 'rejected' %}" class="btn btn-danger btn-sm px-3 shadow-sm" style="border-radius: 0.4rem;">
+                                            <i class="fa-solid fa-xmark me-1"></i> ปฏิเสธ
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted small fst-italic">ดำเนินการแล้ว</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-5">
+                                <div class="fs-1 mb-2 opacity-50">📂</div>
+                                ไม่มีรายการคำขอในขณะนี้
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -81,8 +81,8 @@
                         </a>
                     {% endif %}
                     {% if perms.myapp.delete_employee %}
-                        <a href="{% url 'delete' emp.pk %}" class="btn btn-sm btn-outline-danger w-50 py-1" title="ลบ" onclick="return confirm('ยืนยันการลบข้อมูลพนักงานคนนี้หรือไม่?');">
-                            <i class="fa-solid fa-trash-can me-1"></i> ลบ
+                        <a href="{% url 'delete' emp.id %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('ยืนยันการบันทึกสถานะลาออกของพนักงานคนนี้?');">
+                            <i class="fa-solid fa-user-slash"></i> ลาออก
                         </a>
                     {% endif %}
                 </div>

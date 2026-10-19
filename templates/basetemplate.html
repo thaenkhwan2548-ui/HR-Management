@@ -220,10 +220,10 @@
         </div>
         {% endif %}
 
-        <!-- เมนูหลัก -->
+         <!-- เปลี่ยนข้อความตรงนี้ใน Sidebar -->
         <a href="{% url 'ess_dashboard' %}" class="sidebar-item {% if request.resolver_match.url_name == 'ess_dashboard' %}active{% endif %}">
-            <div class="sidebar-icon-box"><i class="fa-solid fa-id-badge"></i></div>
-            <span>ระบบพนักงาน (ESS)</span>
+             <div class="sidebar-icon-box"><i class="fa-solid fa-id-badge"></i></div>
+             <span>ระบบยื่นคำขอ</span>
         </a>
 
         {% if user.is_staff %}
@@ -246,6 +246,12 @@
             <div class="sidebar-icon-box"><i class="fa-solid fa-chart-line"></i></div>
             <span>รายงานและสถิติ</span>
         </a>
+
+        <!-- เมนูจัดการคำขอสำหรับแอดมิน (ลิงก์ไปยัง /hr-approvals/) -->
+        <a href="{% url 'admin_approval_dashboard' %}" class="sidebar-item {% if request.resolver_match.url_name == 'admin_approval_dashboard' %}active{% endif %}">
+            <div class="sidebar-icon-box"><i class="fa-solid fa-list-check"></i></div>
+            <span>จัดการคำขอ (Approvals)</span>
+        </a>
         {% endif %}
 
         <div class="sidebar-divider"></div>
@@ -253,18 +259,13 @@
         <!-- หมวดหมู่ทางลัด -->
         <div class="sidebar-section-title">เมนูด่วน (Quick Links)</div>
 
-        <a href="{% url 'ess_dashboard' %}" class="sidebar-item">
-            <div class="sidebar-icon-box"><i class="fa-solid fa-file-pen"></i></div>
-            <span>ยื่นคำขอลา / เบิกจ่าย</span>
-        </a>
-
-        <a href="{% url 'profile' %}" class="sidebar-item">
+        <a href="{% url 'profile' %}" class="sidebar-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
             <div class="sidebar-icon-box"><i class="fa-solid fa-user-gear"></i></div>
             <span>ตั้งค่าโปรไฟล์</span>
         </a>
         
-        <!-- เมนูเชื่อมโยงไปยัง API Console ที่เพิ่งสร้าง -->
-        <a href="{% url 'api_page' %}" class="sidebar-item">
+        <!-- เมนูเชื่อมโยงไปยัง API Console -->
+        <a href="{% url 'api_page' %}" class="sidebar-item {% if request.resolver_match.url_name == 'api_page' %}active{% endif %}">
             <div class="sidebar-icon-box"><i class="fa-solid fa-network-wired"></i></div>
             <span>API Management Console</span>
         </a>
