@@ -220,22 +220,24 @@
         </div>
         {% endif %}
 
-         <!-- เปลี่ยนข้อความตรงนี้ใน Sidebar -->
+        <!-- เมนูสำหรับพนักงานและทุกคน -->
         <a href="{% url 'ess_dashboard' %}" class="sidebar-item {% if request.resolver_match.url_name == 'ess_dashboard' %}active{% endif %}">
              <div class="sidebar-icon-box"><i class="fa-solid fa-id-badge"></i></div>
              <span>ระบบยื่นคำขอ</span>
         </a>
 
+        <!-- ย้ายระบบบันทึกเวลาออกมาให้อยู่นอกเงื่อนไข เพื่อให้พนักงานเห็นด้วย -->
+        <a href="{% url 'attendance' %}" class="sidebar-item {% if request.resolver_match.url_name == 'attendance' %}active{% endif %}">
+             <div class="sidebar-icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
+             <span>ระบบบันทึกเวลา</span>
+        </a>
+
+        <!-- เมนูเฉพาะผู้ดูแลระบบ (Staff) -->
         {% if user.is_staff %}
         <a href="{% url 'index' %}" class="sidebar-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
             <div class="sidebar-icon-box"><i class="fa-solid fa-users-gear"></i></div>
             <span>ทำเนียบพนักงาน</span>
         </a>
-
-       <a href="{% url 'attendance' %}" class="sidebar-item {% if request.resolver_match.url_name == 'attendance' %}active{% endif %}">
-            <div class="sidebar-icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
-            <span>ระบบบันทึกเวลา</span>
-       </a>
 
         <a href="{% url 'payroll' %}" class="sidebar-item {% if request.resolver_match.url_name == 'payroll' %}active{% endif %}">
             <div class="sidebar-icon-box"><i class="fa-solid fa-file-invoice-dollar"></i></div>
@@ -247,7 +249,6 @@
             <span>รายงานและสถิติ</span>
         </a>
 
-        <!-- เมนูจัดการคำขอสำหรับแอดมิน (ลิงก์ไปยัง /hr-approvals/) -->
         <a href="{% url 'admin_approval_dashboard' %}" class="sidebar-item {% if request.resolver_match.url_name == 'admin_approval_dashboard' %}active{% endif %}">
             <div class="sidebar-icon-box"><i class="fa-solid fa-list-check"></i></div>
             <span>จัดการคำขอ (Approvals)</span>
