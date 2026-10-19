@@ -232,10 +232,10 @@
             <span>ทำเนียบพนักงาน</span>
         </a>
 
-        <a href="{% url 'attendance' %}" class="sidebar-item {% if request.resolver_match.url_name == 'attendance' %}active{% endif %}">
+       <a href="{% url 'attendance' %}" class="sidebar-item {% if request.resolver_match.url_name == 'attendance' %}active{% endif %}">
             <div class="sidebar-icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
             <span>ระบบบันทึกเวลา</span>
-        </a>
+       </a>
 
         <a href="{% url 'payroll' %}" class="sidebar-item {% if request.resolver_match.url_name == 'payroll' %}active{% endif %}">
             <div class="sidebar-icon-box"><i class="fa-solid fa-file-invoice-dollar"></i></div>
